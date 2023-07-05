@@ -1,3 +1,4 @@
+SRC := $(shell find . -name '*.go')
 BIN := $(subst cmd/,dist/,$(wildcard cmd/*))
 
 .PHONY: all clean test run build upgrade help $(SUBDIR)
@@ -11,6 +12,7 @@ clean: $(SUBDIR)	# clean-up environment
 	@rm -f $(BIN)
 
 test:				# run test
+	gofmt -w -s $(SRC)
 	go test -v ./...
 
 run:				# run in the local environment
@@ -27,8 +29,6 @@ help:				# show this message
 	@perl -nle 'print $$& if m{^[\w-]+:.*?#.*$$}' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?#"} {printf "    %-18s %s\n", $$1, $$2}'
 
-dist/%: cmd/%/main.go dist/
+dist/%: cmd/%/main.go $(SRC)
+	mkdir -p $(@D)
 	go build -o $@ $<
-
-dist/:
-	mkdir -p $@
