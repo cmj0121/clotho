@@ -15,6 +15,9 @@ import (
 
 // The entry point of the Clotho.
 type Clotho struct {
+	// show version and exit
+	Version VersionFlag `short:"V" name:"version" help:"Print version info and quit"`
+
 	// the logger options
 	Quiet   bool `short:"q" group:"logger" xor:"verbose,quiet" help:"Disable all logger."`
 	Verbose int  `short:"v" group:"logger" xor:"verbose,quiet" type:"counter" help:"Show the verbose logger."`
