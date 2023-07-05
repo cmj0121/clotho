@@ -3,12 +3,12 @@ package clotho
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 
 	"github.com/cmj0121/clotho/internal/github"
 
 	"github.com/alecthomas/kong"
+	"github.com/olekukonko/tablewriter"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -74,9 +74,20 @@ func (c *Clotho) run(cmd SubCommand) (exitcode int) {
 
 	log.Info().Interface("data", resp).Msg("The result of the command.")
 
-	// show the result as JSON
-	payload, _ := json.MarshalIndent(resp, "", "  ")
-	fmt.Println(string(payload))
+	// show the result as Table
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Key", "Value"})
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
+	for key, value := range resp {
+		switch value.(type) {
+		case string:
+			table.Append([]string{key, value.(string)})
+		default:
+			data, _ := json.Marshal(value)
+			table.Append([]string{key, string(data)})
+		}
+	}
+	table.Render()
 
 	return
 }
