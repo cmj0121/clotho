@@ -2,9 +2,13 @@
 package clotho
 
 import (
+	"encoding/json"
 	"os"
 
+	"github.com/cmj0121/clotho/internal/github"
+
 	"github.com/alecthomas/kong"
+	"github.com/olekukonko/tablewriter"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -14,6 +18,8 @@ type Clotho struct {
 	// the logger options
 	Quiet   bool `short:"q" group:"logger" xor:"verbose,quiet" help:"Disable all logger."`
 	Verbose int  `short:"v" group:"logger" xor:"verbose,quiet" type:"counter" help:"Show the verbose logger."`
+
+	Github *github.GitHub `cmd:"" help:"The GitHub user collector."`
 }
 
 // Create the new instance of the Clotho.
@@ -30,6 +36,18 @@ func (c *Clotho) Run() (exitcode int) {
 	c.prologue()
 	defer c.epilogue()
 
+	var command SubCommand
+
+	switch {
+	case c.Github != nil:
+		command = c.Github
+	default:
+		log.Error().Msg("No command is specified.")
+		exitcode = 1
+		return
+	}
+
+	exitcode = c.run(command)
 	return
 }
 
@@ -38,6 +56,38 @@ func (c *Clotho) AfterApply() (err error) {
 	if c.Quiet {
 		c.Verbose = -1
 	}
+
+	return
+}
+
+// run the subcommand.
+func (c *Clotho) run(cmd SubCommand) (exitcode int) {
+	cmd.Prologue()
+	defer cmd.Epilogue()
+
+	resp, err := cmd.Execute()
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to execute the command.")
+		exitcode = 1
+		return
+	}
+
+	log.Info().Interface("data", resp).Msg("The result of the command.")
+
+	// show the result as Table
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Key", "Value"})
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
+	for key, value := range resp {
+		switch value.(type) {
+		case string:
+			table.Append([]string{key, value.(string)})
+		default:
+			data, _ := json.Marshal(value)
+			table.Append([]string{key, string(data)})
+		}
+	}
+	table.Render()
 
 	return
 }
