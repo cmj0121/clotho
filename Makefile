@@ -31,4 +31,4 @@ help:				# show this message
 
 dist/%: cmd/%/main.go $(SRC)
 	mkdir -p $(@D)
-	go build -o $@ $<
+	go build -ldflags="-s -w" -o $@ $<
