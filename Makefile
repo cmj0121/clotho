@@ -1,7 +1,9 @@
 SRC := $(shell find . -name '*.go')
 BIN := $(subst cmd/,dist/,$(wildcard cmd/*))
 
-.PHONY: all clean test run build upgrade help $(SUBDIR)
+BIN_PATH := /usr/local/bin
+
+.PHONY: all clean test run build install upgrade help $(SUBDIR)
 
 all: $(SUBDIR) 		# default action
 	@[ -f .git/hooks/pre-commit ] || pre-commit install --install-hooks
@@ -19,6 +21,9 @@ run:				# run in the local environment
 	go run
 
 build: $(BIN)		# build the binary/library
+
+install: $(BIN)		# install the binary/library on local
+	install -m755 $(BIN) $(BIN_PATH)/
 
 upgrade:			# upgrade all the necessary packages
 	pre-commit autoupdate
