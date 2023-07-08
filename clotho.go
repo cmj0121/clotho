@@ -19,6 +19,8 @@ type Clotho struct {
 	// show version and exit
 	Version VersionFlag `short:"V" name:"version" help:"Print version info and quit"`
 
+	Table bool `negatable:"" short:"t" help:"Print the result as table." default:"true"`
+
 	// the logger options
 	Quiet   bool `short:"q" group:"logger" xor:"verbose,quiet" help:"Disable all logger."`
 	Verbose int  `short:"v" group:"logger" xor:"verbose,quiet" type:"counter" help:"Show the verbose logger."`
@@ -81,22 +83,29 @@ func (c *Clotho) run(cmd SubCommand) (exitcode int) {
 
 	log.Info().Interface("data", resp).Msg("The result of the command.")
 
-	// show the result as Table
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Key", "Value"})
-	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.SetAutoWrapText(false)
-	table.SetAutoMergeCells(true)
-	for key, value := range resp {
-		switch value.(type) {
-		case string:
-			table.Append([]string{key, value.(string)})
-		default:
-			data, _ := json.Marshal(value)
-			table.Append([]string{key, string(data)})
+	switch c.Table {
+	case true:
+		// show the result as Table
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"Key", "Value"})
+		table.SetAlignment(tablewriter.ALIGN_LEFT)
+		table.SetAutoWrapText(false)
+		table.SetAutoMergeCells(true)
+		for key, value := range resp {
+			switch value.(type) {
+			case string:
+				table.Append([]string{key, value.(string)})
+			default:
+				data, _ := json.Marshal(value)
+				table.Append([]string{key, string(data)})
+			}
 		}
+		table.Render()
+	case false:
+		// show the result as JSON
+		data, _ := json.Marshal(resp)
+		os.Stdout.Write(data)
 	}
-	table.Render()
 
 	return
 }
