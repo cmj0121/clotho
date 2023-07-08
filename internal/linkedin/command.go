@@ -16,7 +16,7 @@ type LinkedIn struct {
 	utils.Selenium
 }
 
-func (l *LinkedIn) Execute() (data map[string]interface{}, err error) {
+func (l *LinkedIn) Execute() (resp interface{}, err error) {
 	url := fmt.Sprintf("https://www.linkedin.com/in/%s", l.Username)
 
 	if err = l.Get(url); err != nil {
@@ -24,34 +24,15 @@ func (l *LinkedIn) Execute() (data map[string]interface{}, err error) {
 		return
 	}
 
-	data = l.extractUserProfile()
+	resp = l.extractUserProfile()
 	return
 }
 
-func (l *LinkedIn) extractUserProfile() (data map[string]interface{}) {
-	data = map[string]interface{}{}
-
-	data["name"] = l.getFieldData(".top-card-layout__title")
-	data["title"] = l.getFieldData(".top-card-layout__headline")
-	data["location"] = l.getFieldData(".top-card__subline-item")
-
-	// list all the experiences
-	selector := ".experience__list > li"
-	elms, _ := l.FindElements(selenium.ByCSSSelector, selector)
-	for _, elm := range elms {
-		// get the company name
-		subjectSelector := ".profile-section-card__subtitle > a"
-		subjectElm, _ := elm.FindElement(selenium.ByCSSSelector, subjectSelector)
-
-		subject, _ := subjectElm.Text()
-
-		// get the job title
-		jobSelector := ".profile-section-card__title"
-		jobElm, _ := elm.FindElement(selenium.ByCSSSelector, jobSelector)
-
-		job, _ := jobElm.Text()
-
-		data[subject] = job
+func (l *LinkedIn) extractUserProfile() (data [][]string) {
+	data = [][]string{
+		[]string{"name", l.getFieldData(".top-card-layout__title")},
+		[]string{"title", l.getFieldData(".top-card-layout__headline")},
+		[]string{"location", l.getFieldData(".top-card__subline-item")},
 	}
 
 	return

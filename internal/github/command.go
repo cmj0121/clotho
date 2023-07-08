@@ -19,7 +19,7 @@ type GitHub struct {
 }
 
 // Get the GitHub user information.
-func (g *GitHub) Execute() (data map[string]interface{}, err error) {
+func (g *GitHub) Execute() (data interface{}, err error) {
 	var resp *http.Response
 	var body []byte
 
@@ -37,7 +37,6 @@ func (g *GitHub) Execute() (data map[string]interface{}, err error) {
 		return
 	}
 
-	data = make(map[string]interface{})
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		log.Warn().Err(err).Str("name", g.Username).Msg("Failed to parse the GitHub user.")

@@ -87,19 +87,32 @@ func (c *Clotho) run(cmd SubCommand) (exitcode int) {
 	case true:
 		// show the result as Table
 		table := tablewriter.NewWriter(os.Stdout)
+
+		// set table style
 		table.SetHeader([]string{"Key", "Value"})
 		table.SetAlignment(tablewriter.ALIGN_LEFT)
 		table.SetAutoWrapText(false)
 		table.SetAutoMergeCells(true)
-		for key, value := range resp {
-			switch value.(type) {
-			case string:
-				table.Append([]string{key, value.(string)})
-			default:
-				data, _ := json.Marshal(value)
-				table.Append([]string{key, string(data)})
+
+		switch resp.(type) {
+		case [][]string:
+			table.AppendBulk(resp.([][]string))
+		case map[string]interface{}:
+			for key, value := range resp.(map[string]interface{}) {
+				switch value.(type) {
+				case string:
+					table.Append([]string{key, value.(string)})
+				default:
+					data, _ := json.Marshal(value)
+					table.Append([]string{key, string(data)})
+				}
 			}
+		default:
+			log.Error().Interface("data", resp).Msg("The result is not a map.")
+			exitcode = 1
+			return
 		}
+
 		table.Render()
 	case false:
 		// show the result as JSON
