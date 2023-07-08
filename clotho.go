@@ -85,6 +85,8 @@ func (c *Clotho) run(cmd SubCommand) (exitcode int) {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"Key", "Value"})
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
+	table.SetAutoWrapText(false)
+	table.SetAutoMergeCells(true)
 	for key, value := range resp {
 		switch value.(type) {
 		case string:
