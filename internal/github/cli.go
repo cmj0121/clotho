@@ -6,8 +6,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/rs/zerolog/log"
 	"github.com/cmj0121/clotho/internal/utils"
+	"github.com/rs/zerolog/log"
 )
 
 // The options for the CLI on Clotho.

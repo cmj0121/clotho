@@ -1,7 +1,6 @@
 // Get the global utility for the internal packages.
 package utils
 
-
 import (
 	"net/http"
 
@@ -13,12 +12,12 @@ type Client struct {
 	client *http.Client
 }
 
-// open the necessary resources for the GitHub CLI.
+// open the necessary resources for the HTTP client.
 func (c *Client) Prologue() {
 	c.client = &http.Client{}
 }
 
-// clean up the resources for the GitHub CLI.
+// clean up the resources for the HTTP client.
 func (c *Client) Epilogue() {
 	c.client = nil
 }
