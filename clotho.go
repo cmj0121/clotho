@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/cmj0121/clotho/internal/github"
+	"github.com/cmj0121/clotho/internal/linkedin"
 
 	"github.com/alecthomas/kong"
 	"github.com/olekukonko/tablewriter"
@@ -22,7 +23,8 @@ type Clotho struct {
 	Quiet   bool `short:"q" group:"logger" xor:"verbose,quiet" help:"Disable all logger."`
 	Verbose int  `short:"v" group:"logger" xor:"verbose,quiet" type:"counter" help:"Show the verbose logger."`
 
-	Github *github.GitHub `cmd:"" help:"The GitHub user collector."`
+	Github   *github.GitHub     `cmd:"" help:"The GitHub user collector."`
+	LinkedIn *linkedin.LinkedIn `cmd:"" name:"linkedin" help:"The LinkedIn user collector."`
 }
 
 // Create the new instance of the Clotho.
@@ -34,18 +36,20 @@ func New() *Clotho {
 // run the Clotho on command-line and return the exit code.
 func (c *Clotho) Run() (exitcode int) {
 	/// execute the CLI parser by kong
-	kong.Parse(c)
+	ctx := kong.Parse(c)
 
 	c.prologue()
 	defer c.epilogue()
 
 	var command SubCommand
 
-	switch {
-	case c.Github != nil:
+	switch sub := ctx.Command(); sub {
+	case "github <username>":
 		command = c.Github
+	case "linkedin <username>":
+		command = c.LinkedIn
 	default:
-		log.Error().Msg("No command is specified.")
+		log.Error().Str("subcmd", sub).Msg("Sub-command not implemented.")
 		exitcode = 1
 		return
 	}
