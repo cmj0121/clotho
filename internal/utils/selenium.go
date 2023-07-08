@@ -16,12 +16,10 @@ import (
 )
 
 type Selenium struct {
-	// The path to the ChromeDriver.
-	Driver string `help:"The path to the ChromeDriver." default:"chromedriver"`
-	// The bind port for the ChromeDriver.
-	Port int `help:"The bind address for the ChromeDriver." default:"9515"`
-	// The version of the ChromeDriver.
-	DriverVersion string `help:"The version of the ChromeDriver." default:""`
+	// The options for the Selenium client.
+	Driver        string `group:"selenium" help:"The path to the ChromeDriver." default:"chromedriver"`
+	Port          int    `group:"selenium" help:"The bind address for the ChromeDriver." default:"9515"`
+	DriverVersion string `group:"selenium" help:"The version of the ChromeDriver." default:""`
 
 	// The Selenium service for the ChromeDriver.
 	*selenium.Service `kong:"-"`
