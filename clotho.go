@@ -92,7 +92,7 @@ func (c *Clotho) run(cmd SubCommand) (exitcode int) {
 		table.SetHeader([]string{"Key", "Value"})
 		table.SetAlignment(tablewriter.ALIGN_LEFT)
 		table.SetAutoWrapText(false)
-		table.SetAutoMergeCells(true)
+		// table.SetAutoMergeCells(true)
 
 		switch resp.(type) {
 		case [][]string:

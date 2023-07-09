@@ -10,6 +10,7 @@ import (
 	"path"
 	"regexp"
 	"runtime"
+	"time"
 
 	"github.com/rs/zerolog/log"
 	"github.com/tebeka/selenium"
@@ -88,6 +89,18 @@ func (s *Selenium) Epilogue() {
 		s.Service.Stop()
 		s.Service = nil
 	}
+}
+
+// wait until the element is visible.
+func (s *Selenium) WaitVisible(selector string, duration time.Duration) (exists bool) {
+	// wait until the element is visible.
+	s.WaitWithTimeout(func(wd selenium.WebDriver) (bool, error) {
+		_, err := wd.FindElement(selenium.ByCSSSelector, selector)
+		return err == nil, nil
+	}, duration)
+
+	_, err := s.FindElement(selenium.ByCSSSelector, selector)
+	return err == nil
 }
 
 // check the driver exists or not, and download it if necessary.
