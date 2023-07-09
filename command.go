@@ -9,5 +9,5 @@ type SubCommand interface {
 	Epilogue()
 
 	// execute the subcommand and get the result.
-	Execute() (resp map[string]interface{}, err error)
+	Execute() (resp interface{}, err error)
 }

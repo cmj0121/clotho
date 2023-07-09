@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/cmj0121/clotho/internal/utils"
 	"github.com/rs/zerolog/log"
 )
 
@@ -14,25 +15,15 @@ type GitHub struct {
 	Username string `arg:"" help:"The GitHub username."`
 
 	// The HTTP client for the GitHub API.
-	client *http.Client
-}
-
-// open the necessary resources for the GitHub CLI.
-func (g *GitHub) Prologue() {
-	g.client = &http.Client{}
-}
-
-// clean up the resources for the GitHub CLI.
-func (g *GitHub) Epilogue() {
-	g.client = nil
+	utils.Client
 }
 
 // Get the GitHub user information.
-func (g *GitHub) Execute() (data map[string]interface{}, err error) {
+func (g *GitHub) Execute() (data interface{}, err error) {
 	var resp *http.Response
 	var body []byte
 
-	resp, err = g.client.Get("https://api.github.com/users/" + g.Username)
+	resp, err = g.Get("https://api.github.com/users/" + g.Username)
 	if err != nil {
 		log.Warn().Err(err).Str("name", g.Username).Msg("Failed to get the GitHub user.")
 		return
@@ -46,7 +37,6 @@ func (g *GitHub) Execute() (data map[string]interface{}, err error) {
 		return
 	}
 
-	data = make(map[string]interface{})
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		log.Warn().Err(err).Str("name", g.Username).Msg("Failed to parse the GitHub user.")
