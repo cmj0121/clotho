@@ -11,5 +11,5 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/rs/zerolog v1.29.1 // indirect
 	github.com/tebeka/selenium v0.9.9 // indirect
-	golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6 // indirect
+	golang.org/x/sys v0.10.0 // indirect
 )
