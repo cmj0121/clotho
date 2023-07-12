@@ -22,7 +22,7 @@ type Selenium struct {
 	Driver        string `group:"selenium" help:"The path to the ChromeDriver." default:"chromedriver"`
 	Port          int    `group:"selenium" help:"The bind address for the ChromeDriver." default:"9515"`
 	DriverVersion string `group:"selenium" help:"The version of the ChromeDriver." default:""`
-	Headless 	  bool   `group:"selenium" help:"Run the ChromeDriver in headless mode." default:"true" negatable:""`
+	Headless      bool   `group:"selenium" help:"Run the ChromeDriver in headless mode." default:"true" negatable:""`
 
 	// The Selenium service for the ChromeDriver.
 	*selenium.Service `kong:"-"`

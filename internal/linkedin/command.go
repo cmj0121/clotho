@@ -3,17 +3,17 @@ package linkedin
 
 import (
 	"fmt"
-	"time"
 	"strings"
+	"time"
 
 	"github.com/cmj0121/clotho/internal/utils"
-	"github.com/tebeka/selenium"
 	"github.com/rs/zerolog/log"
+	"github.com/tebeka/selenium"
 )
 
 type LinkedIn struct {
-	Username string `arg:"" help:"The GitHub username."`
-	Wait time.Duration `help:"The wait time for the Selenium dom visible." default:"2s"`
+	Username string        `arg:"" help:"The GitHub username."`
+	Wait     time.Duration `help:"The wait time for the Selenium dom visible." default:"2s"`
 
 	// The Selenium wrapper client.
 	utils.Selenium
@@ -33,9 +33,9 @@ func (l *LinkedIn) Execute() (resp interface{}, err error) {
 
 func (l *LinkedIn) extractUserProfile() (data [][]string) {
 	data = [][]string{
-		[]string{"name", l.getFieldData(".top-card-layout__title"), "", ""},
-		[]string{"title", l.getFieldData(".top-card-layout__headline"), "", ""},
-		[]string{"location", l.getFieldData(".top-card__subline-item"), "", ""},
+		{"name", l.getFieldData(".top-card-layout__title"), "", ""},
+		{"title", l.getFieldData(".top-card-layout__headline"), "", ""},
+		{"location", l.getFieldData(".top-card__subline-item"), "", ""},
 	}
 
 	// wait untils the experience section is loaded
@@ -78,7 +78,6 @@ func (l *LinkedIn) extractUserProfile() (data [][]string) {
 			for _, position := range positions {
 				title, _ := l.getText(position, "h3.profile-section-card__title")
 
-
 				time_ranges_dom, _ := position.FindElements(selenium.ByCSSSelector, ".date-range > time")
 				time_ranges := []string{}
 				for _, time_range_dom := range time_ranges_dom {
@@ -114,7 +113,7 @@ func (l *LinkedIn) getFieldData(selector string) (value string) {
 	return
 }
 
-func (l *LinkedIn) getText(elm selenium.WebElement, selectors... string) (value string, err error) {
+func (l *LinkedIn) getText(elm selenium.WebElement, selectors ...string) (value string, err error) {
 	var dom selenium.WebElement
 
 	for _, selector := range selectors {
