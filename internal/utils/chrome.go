@@ -10,7 +10,7 @@ import (
 
 // The chrome wrapper with undetectable techniques.
 type Chrome struct {
-	Headless bool `group:"chromr" help:"Run the browser in headless mode." default:"true" negatable:""`
+	Headless bool `group:"chrome" help:"Run the browser in headless mode." default:"true" negatable:""`
 
 	// The ChromeDP parent context.
 	exec_ctx    context.Context
