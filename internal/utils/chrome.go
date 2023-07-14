@@ -56,3 +56,9 @@ func (c *Chrome) Navigate(url string) (err error) {
 	)
 	return
 }
+
+// Run the sevearal actions.
+func (c *Chrome) Run(actions ...chromedp.Action) (err error) {
+	err = chromedp.Run(c.ctx, actions...)
+	return
+}

@@ -7,7 +7,6 @@ import (
 
 	"github.com/cmj0121/clotho/internal/demo"
 	"github.com/cmj0121/clotho/internal/github"
-	"github.com/cmj0121/clotho/internal/linkedin"
 
 	"github.com/alecthomas/kong"
 	"github.com/olekukonko/tablewriter"
@@ -27,7 +26,6 @@ type Clotho struct {
 	Verbose int  `short:"v" group:"logger" xor:"verbose,quiet" type:"counter" help:"Show the verbose logger."`
 
 	Github   *github.GitHub     `cmd:"" help:"The GitHub user collector."`
-	LinkedIn *linkedin.LinkedIn `cmd:"" name:"linkedin" help:"The LinkedIn user collector."`
 	Demo     *demo.Demo         `cmd:"" name:"demo" help:"The Demo collector."`
 }
 
@@ -50,8 +48,6 @@ func (c *Clotho) Run() (exitcode int) {
 	switch sub := ctx.Command(); sub {
 	case "github <username>":
 		command = c.Github
-	case "linkedin <username>":
-		command = c.LinkedIn
 	case "demo <link>":
 		command = c.Demo
 	default:
