@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"os"
 
+	"github.com/cmj0121/clotho/internal/demo"
 	"github.com/cmj0121/clotho/internal/github"
-	"github.com/cmj0121/clotho/internal/linkedin"
 
 	"github.com/alecthomas/kong"
 	"github.com/olekukonko/tablewriter"
@@ -26,7 +26,7 @@ type Clotho struct {
 	Verbose int  `short:"v" group:"logger" xor:"verbose,quiet" type:"counter" help:"Show the verbose logger."`
 
 	Github   *github.GitHub     `cmd:"" help:"The GitHub user collector."`
-	LinkedIn *linkedin.LinkedIn `cmd:"" name:"linkedin" help:"The LinkedIn user collector."`
+	Demo     *demo.Demo         `cmd:"" name:"demo" help:"The Demo collector."`
 }
 
 // Create the new instance of the Clotho.
@@ -48,8 +48,8 @@ func (c *Clotho) Run() (exitcode int) {
 	switch sub := ctx.Command(); sub {
 	case "github <username>":
 		command = c.Github
-	case "linkedin <username>":
-		command = c.LinkedIn
+	case "demo <link>":
+		command = c.Demo
 	default:
 		log.Error().Str("subcmd", sub).Msg("Sub-command not implemented.")
 		exitcode = 1
@@ -95,6 +95,9 @@ func (c *Clotho) run(cmd SubCommand) (exitcode int) {
 		// table.SetAutoMergeCells(true)
 
 		switch resp.(type) {
+		case nil:
+			// empty result and nothing to do
+			return
 		case [][]string:
 			table.AppendBulk(resp.([][]string))
 		case map[string]interface{}:
