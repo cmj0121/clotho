@@ -16,20 +16,20 @@ import (
 
 type Demo struct {
 	Link   string `arg:"" help:"The target link."`
-	Action string `enum:"http,selenium" required:"" default:"http" help:"The action to perform."`
+	Action string `enum:"http,chrome" required:"" default:"http" help:"The action to perform."`
 
 	// The HTTP client for the GitHub API.
 	utils.Client
-	// The Selenium wrapper client.
-	utils.Selenium
+	// The Chrome wrapper client.
+	utils.Chrome
 }
 
 func (d *Demo) Prologue() {
 	switch d.Action {
 	case "http":
 		d.Client.Prologue()
-	case "selenium":
-		d.Selenium.Prologue()
+	case "chrome":
+		d.Chrome.Prologue()
 	}
 }
 
@@ -37,8 +37,8 @@ func (d *Demo) Epilogue() {
 	switch d.Action {
 	case "http":
 		d.Client.Epilogue()
-	case "selenium":
-		d.Selenium.Epilogue()
+	case "chrome":
+		d.Chrome.Epilogue()
 	}
 }
 
@@ -65,26 +65,24 @@ func (d *Demo) Execute() (data interface{}, err error) {
 		}
 
 		fmt.Println(string(body))
-	case "selenium":
-		help := strings.Join([]string{
-			"exit: exit the demo command",
-		}, "\n")
-
+	case "chrome":
 		reader := bufio.NewReader(os.Stdin)
-		d.Selenium.Get(d.Link)
+		link := d.Link
 		for {
-			fmt.Print(">>> ")
+			d.Chrome.Navigate(link)
 
+			fmt.Print(">>> ")
 			text, rerr := reader.ReadString('\n')
+
 			switch rerr {
 			case nil:
 				text = strings.TrimSpace(text)
-				switch text {
-				case "exit":
-					return
+
+				switch {
+				case strings.HasPrefix(text, "http://") || strings.HasPrefix(text, "https://"):
+					link = text
 				default:
-					fmt.Printf("unknown command: %v\n", text)
-					fmt.Println(help)
+					fmt.Printf("invalid link: %s\n", text)
 				}
 			case io.EOF:
 				return

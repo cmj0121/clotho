@@ -10,6 +10,8 @@ import (
 
 // The chrome wrapper with undetectable techniques.
 type Chrome struct {
+	Headless bool `group:"chromr" help:"Run the browser in headless mode." default:"true" negatable:""`
+
 	// The ChromeDP parent context.
 	exec_ctx    context.Context
 	exec_cancel context.CancelFunc
@@ -31,7 +33,7 @@ func (c *Chrome) Prologue() {
 		chromedp.Flag("enable-automation", false),
 		chromedp.Flag("disable-blink-features", "AutomationControlled"),
 		// headless chrome options
-		chromedp.Flag("headless", false),
+		chromedp.Flag("headless", c.Headless),
 	)
 
 	c.exec_ctx, c.exec_cancel = chromedp.NewExecAllocator(context.Background(), opts...)
