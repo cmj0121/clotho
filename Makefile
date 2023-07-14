@@ -35,5 +35,6 @@ help:				# show this message
 		awk 'BEGIN {FS = ":.*?#"} {printf "    %-18s %s\n", $$1, $$2}'
 
 dist/%: cmd/%/main.go $(SRC)
-	mkdir -p $(@D)
+	@mkdir -p $(@D)
+	@go mod tidy
 	go build -ldflags="-s -w" -o $@ $<

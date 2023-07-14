@@ -2,13 +2,13 @@
 package demo
 
 import (
-	"strings"
 	"bufio"
-	"io"
-	"os"
-	"fmt"
 	"errors"
+	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/cmj0121/clotho/internal/utils"
 	"github.com/rs/zerolog/log"
@@ -77,22 +77,22 @@ func (d *Demo) Execute() (data interface{}, err error) {
 
 			text, rerr := reader.ReadString('\n')
 			switch rerr {
-				case nil:
-					text = strings.TrimSpace(text)
-					switch text {
-					case "exit":
-						return
-					default:
-						fmt.Printf("unknown command: %v\n", text)
-						fmt.Println(help)
-					}
-				case io.EOF:
+			case nil:
+				text = strings.TrimSpace(text)
+				switch text {
+				case "exit":
 					return
 				default:
-					log.Error().Err(rerr).Msg("failed to read the command")
+					fmt.Printf("unknown command: %v\n", text)
+					fmt.Println(help)
+				}
+			case io.EOF:
+				return
+			default:
+				log.Error().Err(rerr).Msg("failed to read the command")
 
-					err = errors.New(fmt.Sprintf("failed to read the command: %v", rerr))
-					return
+				err = errors.New(fmt.Sprintf("failed to read the command: %v", rerr))
+				return
 			}
 		}
 
